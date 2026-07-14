@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Instagram Analyzer & Strategy Hub</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #000; margin: 0; display: flex; justify-content: center;
+        }
+        .container { 
+            width: 100%; max-width: 450px; background: white; min-height: 100vh; display: flex; flex-direction: column;
+        }
+        .header { 
+            display: flex; align-items: center; justify-content: center; padding: 10px 15px; border-bottom: 1px solid #dbdbdb; background: white;
+        }
+        .logo-container { display: flex; align-items: center; gap: 8px; }
+        .ig-icon { height: 32px; width: auto; }
+        .ig-text { height: 50px; width: auto; object-fit: contain; margin-top: 4px; }
+        .hidden { display: none !important; }
+        .form-section { padding: 20px; flex: 1; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; color: #262626;}
+        input { 
+            width: 100%; padding: 14px; border: 1px solid #dbdbdb; border-radius: 8px; box-sizing: border-box; background: #fafafa; font-size: 15px;
+        }
+        input:focus { outline: none; border-color: #a8a8a8; }
+        button.primary-btn { 
+            background-color: #0095f6; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; width: 100%; margin-top: 10px;
+        }
+        button.primary-btn:active { background-color: #1877f2; transform: scale(0.98); }
+        .error-msg { color: #ed4956; font-size: 14px; text-align: center; margin-top: 15px; font-weight: 500;}
+        .loading-container {
+            text-align: center; padding: 30px 20px; background: #fafafa; border-radius: 12px; border: 1px solid #dbdbdb; margin-top: 20px;
+        }
+        .loader-spinner {
+            border: 4px solid #efefef; border-top: 4px solid #0095f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .step-text { font-size: 16px; font-weight: 600; color: #262626; margin-bottom: 5px; }
+        .step-subtext { font-size: 13px; color: #8e8e8e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <img class="ig-icon" src="https://cdn.iconscout.com/icon/free/png-512/free-instagram-logo-icon-svg-download-png-1583142.png?f=webp&w=256" alt="Icon">
+                <img class="ig-text" src="https://imgs.search.brave.com/WtKLjCAUEZtbVub3Lj1Styk_lggX3X2e0f12WyAGekQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly8xMDAw/bG9nb3MubmV0L3dw/LWNvbnRlbnQvdXBs/b2Fkcy8yMDE3LzAy/L0luc3RhZ3JhbS1M/b2dvLTIwMTAtMjAx/My01MDB4MjgxLnBu/Zw" alt="Logo">
+            </div>
+        </div>
+        <div id="analyzeForm" class="form-section">
+            <div class="form-group">
+                <label>Instagram Username (@)</label>
+                <input type="text" id="instaId" placeholder="e.g., @yourname" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>Content Type</label>
+                <input type="text" id="contentType" placeholder="e.g., Tech, Comedy, Fashion">
+            </div>
+            <div class="form-group">
+                <label>Average Views per Post/Reel</label>
+                <input type="number" id="avgViews" placeholder="e.g., 5000">
+            </div>
+            <div class="form-group">
+                <label>Usual Upload Time</label>
+                <input type="time" id="uploadTime">
+            </div>
+            <button id="analyzeBtn" class="primary-btn" onclick="startInitialAnalysisRoutine()">Analyze Account</button>
+            <div id="errorText" class="error-msg hidden"></div>
+            <div id="loadingCard" class="loading-container hidden">
+                <div class="loader-spinner"></div>
+                <div class="step-text" id="loadingStepText">Connecting...</div>
+                <div class="step-subtext" id="loadingSubText">Initializing analysis engine</div>
+            </div>
+        </div>
+    </div>
+    <script src="config.js"></script>
+    <script src="ai.js"></script>
+</body>
+</html>

